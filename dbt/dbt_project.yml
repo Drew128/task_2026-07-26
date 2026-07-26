@@ -1,0 +1,16 @@
+name: 'zeely_takehome'
+version: '1.0.0'
+config-version: 2
+
+profile: 'dbt_acquisition'
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+vars:
+  report_timezone: "America/New_York"
+  reporting_currency: "USD"
