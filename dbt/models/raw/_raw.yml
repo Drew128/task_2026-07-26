@@ -19,6 +19,10 @@ sources:
     tables:
       - name: meta_spend_export
         description: Daily Meta spend, nested API pull (NDJSON).
+        loaded_at_field: "CAST(`date` AS TIMESTAMP)"
+        freshness:
+          warn_after: {count: 1, period: day}
+          error_after: {count: 2, period: day}
         external:
           location: "gs://{{ env_var('DBT_RAW_BUCKET', 'zeely-takehome-raw') }}/source=meta/feed=spend/type=daily/v=1/*"
           options:
@@ -27,6 +31,10 @@ sources:
 
       - name: tiktok_spend_hourly
         description: Hourly TikTok spend (CSV), UTC, account currency.
+        loaded_at_field: "CAST(stat_hour_utc AS TIMESTAMP)"
+        freshness:
+          warn_after: {count: 1, period: hour}
+          error_after: {count: 2, period: hour}
         external:
           location: "gs://{{ env_var('DBT_RAW_BUCKET', 'zeely-takehome-raw') }}/source=tiktok/feed=spend/type=hourly/v=1/*"
           options:
@@ -36,6 +44,10 @@ sources:
 
       - name: google_ads_spend
         description: Daily Google Ads spend (CSV), cost in micros.
+        loaded_at_field: "CAST(`date` AS TIMESTAMP)"
+        freshness:
+          warn_after: {count: 1, period: day}
+          error_after: {count: 2, period: day}
         external:
           location: "gs://{{ env_var('DBT_RAW_BUCKET', 'zeely-takehome-raw') }}/source=google/feed=spend/type=daily/v=1/*"
           options:
@@ -45,6 +57,10 @@ sources:
 
       - name: attribution_events
         description: MMP install/trial/purchase events (CSV).
+        loaded_at_field: "CAST(received_at_utc AS TIMESTAMP)"
+        freshness:
+          warn_after: {count: 1, period: hour}
+          error_after: {count: 2, period: hour}
         external:
           location: "gs://{{ env_var('DBT_RAW_BUCKET', 'zeely-takehome-raw') }}/source=measurement_partner/feed=events/type=event/v=1/*"
           options:
@@ -54,6 +70,10 @@ sources:
 
       - name: billing_transactions
         description: Billing charges/refunds (NDJSON), USD.
+        loaded_at_field: "CAST(created_at_utc AS TIMESTAMP)"
+        freshness:
+          warn_after: {count: 1, period: hour}
+          error_after: {count: 2, period: hour}
         external:
           location: "gs://{{ env_var('DBT_RAW_BUCKET', 'zeely-takehome-raw') }}/source=billing_partner/feed=transactions/type=transaction/v=1/*"
           options:
@@ -62,6 +82,10 @@ sources:
 
       - name: fx_rates
         description: Daily FX rates (CSV), usd_rate = USD per 1 unit currency.
+        loaded_at_field: "CAST(`date` AS TIMESTAMP)"
+        freshness:
+          warn_after: {count: 1, period: day}
+          error_after: {count: 2, period: day}
         external:
           location: "gs://{{ env_var('DBT_RAW_BUCKET', 'zeely-takehome-raw') }}/source=forex_partner/feed=rates/type=daily/v=1/*"
           options:
@@ -71,6 +95,10 @@ sources:
 
       - name: platform_daily_totals
         description: Ground-truth daily platform spend (CSV), USD, NY dates.
+        loaded_at_field: "CAST(`date` AS TIMESTAMP)"
+        freshness:
+          warn_after: {count: 1, period: day}
+          error_after: {count: 2, period: day}
         external:
           location: "gs://{{ env_var('DBT_RAW_BUCKET', 'zeely-takehome-raw') }}/source=platform/feed=totals/type=daily/v=1/*"
           options:
