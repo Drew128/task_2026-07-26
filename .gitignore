@@ -7,5 +7,12 @@ dbt_packages/
 logs/
 .user.yml
 
+# Secrets — never commit credentials / service-account keys
+profiles.yml
+**/profiles.yml
+*keyfile*.json
+*-key.json
+*service-account*.json
+
 # OS
 .DS_Store
