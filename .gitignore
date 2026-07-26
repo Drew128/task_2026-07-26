@@ -1,0 +1,11 @@
+# Raw source data (lives in GCS; not committed)
+data/
+
+# dbt artifacts
+target/
+dbt_packages/
+logs/
+.user.yml
+
+# OS
+.DS_Store
