@@ -14,3 +14,5 @@ clean-targets: ["target", "dbt_packages"]
 vars:
   report_timezone: "America/New_York"
   reporting_currency: "USD"
+  gcp_project: "zeely-takehome"
+  raw_bucket: "zeely-takehome-raw"
