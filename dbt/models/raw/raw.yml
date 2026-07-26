@@ -5,8 +5,11 @@ sources:
     description: >
       External tables over the Hive-partitioned GCS landing zone. Layout:
         source=<s>/feed=<f>/type=<t>/v=<n>/load_date=<YYYY-MM-DD>/load_epoch=<sec>/<file>
-      BigQuery auto-detects both schema and the partition columns
-      (source, feed, type, v, load_date, load_epoch) from the paths.
+      The hive_partition_uri_prefix is scoped per source down to v=<n>/, so
+      source/feed/type/v are constants baked into the prefix and only
+      load_date + load_epoch are partition columns. This keeps each external
+      table's partition schema trivial and avoids BigQuery mis-inferring the
+      key order when many source= branches share one bucket root.
       Add a new feed = add a source block; add a new load = drop a new
       load_date=/load_epoch= folder (staging keeps only the latest load).
     database: "{{ env_var('DBT_GCP_PROJECT', 'zeely-takehome') }}"
@@ -20,7 +23,7 @@ sources:
           location: "gs://{{ env_var('DBT_RAW_BUCKET', 'zeely-takehome-raw') }}/source=meta/feed=spend/type=daily/v=1/*"
           options:
             format: newline_delimited_json
-            hive_partition_uri_prefix: "gs://{{ env_var('DBT_RAW_BUCKET', 'zeely-takehome-raw') }}/"
+            hive_partition_uri_prefix: "gs://{{ env_var('DBT_RAW_BUCKET', 'zeely-takehome-raw') }}/source=meta/feed=spend/type=daily/v=1/"
 
       - name: tiktok_spend_hourly
         description: Hourly TikTok spend (CSV), UTC, account currency.
@@ -29,7 +32,7 @@ sources:
           options:
             format: csv
             skip_leading_rows: 1
-            hive_partition_uri_prefix: "gs://{{ env_var('DBT_RAW_BUCKET', 'zeely-takehome-raw') }}/"
+            hive_partition_uri_prefix: "gs://{{ env_var('DBT_RAW_BUCKET', 'zeely-takehome-raw') }}/source=tiktok/feed=spend/type=hourly/v=1/"
 
       - name: google_ads_spend
         description: Daily Google Ads spend (CSV), cost in micros.
@@ -38,7 +41,7 @@ sources:
           options:
             format: csv
             skip_leading_rows: 1
-            hive_partition_uri_prefix: "gs://{{ env_var('DBT_RAW_BUCKET', 'zeely-takehome-raw') }}/"
+            hive_partition_uri_prefix: "gs://{{ env_var('DBT_RAW_BUCKET', 'zeely-takehome-raw') }}/source=google/feed=spend/type=daily/v=1/"
 
       - name: attribution_events
         description: MMP install/trial/purchase events (CSV).
@@ -47,7 +50,7 @@ sources:
           options:
             format: csv
             skip_leading_rows: 1
-            hive_partition_uri_prefix: "gs://{{ env_var('DBT_RAW_BUCKET', 'zeely-takehome-raw') }}/"
+            hive_partition_uri_prefix: "gs://{{ env_var('DBT_RAW_BUCKET', 'zeely-takehome-raw') }}/source=measurement_partner/feed=events/type=event/v=1/"
 
       - name: billing_transactions
         description: Billing charges/refunds (NDJSON), USD.
@@ -55,7 +58,7 @@ sources:
           location: "gs://{{ env_var('DBT_RAW_BUCKET', 'zeely-takehome-raw') }}/source=billing_partner/feed=transactions/type=transaction/v=1/*"
           options:
             format: newline_delimited_json
-            hive_partition_uri_prefix: "gs://{{ env_var('DBT_RAW_BUCKET', 'zeely-takehome-raw') }}/"
+            hive_partition_uri_prefix: "gs://{{ env_var('DBT_RAW_BUCKET', 'zeely-takehome-raw') }}/source=billing_partner/feed=transactions/type=transaction/v=1/"
 
       - name: fx_rates
         description: Daily FX rates (CSV), usd_rate = USD per 1 unit currency.
@@ -64,7 +67,7 @@ sources:
           options:
             format: csv
             skip_leading_rows: 1
-            hive_partition_uri_prefix: "gs://{{ env_var('DBT_RAW_BUCKET', 'zeely-takehome-raw') }}/"
+            hive_partition_uri_prefix: "gs://{{ env_var('DBT_RAW_BUCKET', 'zeely-takehome-raw') }}/source=forex_partner/feed=rates/type=daily/v=1/"
 
       - name: platform_daily_totals
         description: Ground-truth daily platform spend (CSV), USD, NY dates.
@@ -73,4 +76,4 @@ sources:
           options:
             format: csv
             skip_leading_rows: 1
-            hive_partition_uri_prefix: "gs://{{ env_var('DBT_RAW_BUCKET', 'zeely-takehome-raw') }}/"
+            hive_partition_uri_prefix: "gs://{{ env_var('DBT_RAW_BUCKET', 'zeely-takehome-raw') }}/source=platform/feed=totals/type=daily/v=1/"
