@@ -27,7 +27,7 @@ account_channel_map AS (
     FROM {{ ref('account_channel_map') }}
 ),
 
-unioned AS (
+spend AS (
     SELECT * FROM meta
     UNION ALL
     SELECT * FROM google
@@ -37,16 +37,16 @@ unioned AS (
 
 final AS (
     SELECT
-        unioned.spend_date,
+        spend.spend_date,
         account_channel_map.channel,
         account_channel_map.platform,
-        unioned.campaign_id,
-        unioned.campaign_name,
-        unioned.spend_usd,
-        unioned.data_source
-    FROM unioned
+        spend.campaign_id,
+        spend.campaign_name,
+        spend.spend_usd,
+        spend.data_source
+    FROM spend
     LEFT JOIN account_channel_map
-        ON account_channel_map.account_id = unioned.account_id
+           ON spend.account_id = account_channel_map.account_id
 )
 
 SELECT *
