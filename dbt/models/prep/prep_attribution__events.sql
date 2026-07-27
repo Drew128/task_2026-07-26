@@ -32,7 +32,6 @@ final AS (
         DATETIME(CAST(event_time_utc AS TIMESTAMP), '{{ var("report_timezone") }}')
                                                                AS event_at_local,
         CAST(received_at_utc AS TIMESTAMP)                     AS received_at_utc,
-        REGEXP_EXTRACT(campaign_id, r'^(meta|tiktok|google)_') AS vendor,
         NULLIF(REGEXP_REPLACE(campaign_id, r'^(meta_|tiktok_|google_)', ''), '') 
                                                                AS campaign_id,
         country,
