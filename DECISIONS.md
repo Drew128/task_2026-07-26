@@ -41,9 +41,10 @@
 
 ```bash
 # 1. upload data/ to GCS in the hive layout (see raw sources)
-# 2. set env vars: DBT_GCP_PROJECT, DBT_RAW_DATASET, DBT_RAW_BUCKET
+# 2. set gcp_project / raw_bucket in dbt_project.yml vars (or override via --vars)
 dbt deps
+dbt seed                                   # load account_channel_map (config-driven mapping)
 dbt run-operation stage_external_sources   # create raw external tables
-dbt build                                  # build models + run tests
+dbt build                                  # build seeds + models + run tests
 dbt source freshness                       # freshness checks
 ```
