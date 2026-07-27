@@ -92,6 +92,61 @@
   so we could build an intraday/hourly acquisition report for TikTok. Parked for
   now; the daily mart is the deliverable.
 
+## if this ran in production
+
+- **Orchestration & scheduling.** A single orchestrator (e.g. Airflow) owns the
+  daily run: wait until every spend feed has landed, then trigger the pipeline —
+  or, on a timeout, run a partial pipeline (proceed without a late source rather
+  than block everything).
+- **Alerting.** The orchestrator notifies on load failures, source-freshness
+  breaches, and test failures.
+- **Environments & CI/CD.** Separate dev/test environments so model developers
+  don't step on each other, plus a safe promotion path to prod. The exact CI/CD
+  wiring depends on whether we're on dbt Cloud or Core.
+- **Incrementality.** Views are fine at this scale but get slow/expensive on real
+  volume, so the refresh pattern would be analysed and models made incremental.
+  The idempotency building block is already here — the latest load overwrites
+  older ones, so a model can be re-run N times without old data clobbering new.
+  Incremental runs take a **start/end date range as vars from the orchestrator**,
+  so we process a single day or backfill a specific gap; the model should **fail
+  fast if the range vars are missing**, to prevent an accidental full rebuild.
+  Late / restated data is absorbed by a **lookback window owned by the model** —
+  it subtracts N days from the incremental start bound (the orchestrator only
+  passes the processing range; the lookback is the model's own concern), so
+  restated attribution/spend and late refunds settle.
+- **Refresh cadence & dead-model cleanup.** Refresh views and external tables on
+  a schedule, at least weekly; flag anything not refreshed in > 1 week as a
+  likely abandoned model cluttering the warehouse, and prune it.
+- **Historized mappings (SCD2).** Snapshot the mapping tables
+  (`account → channel`, `campaign → channel`) as slowly-changing dimensions, so
+  past facts keep the channel/name as it was on that date rather than being
+  rewritten by the current mapping.
+- **Roadmap models.** Cohort **D0 / D7 / D30 ROAS** (see "revenue & cohort ROAS")
+  and an **hourly TikTok report** (TikTok prep already keeps the hourly grain)
+  are the first models to add.
+- **Performance & storage.** Partition tables by date and cluster by the join
+  keys (campaign_id / user_id). For sparse data, BigQuery physical (compressed)
+  billing storage can be cheaper.
+- **Data contracts.** Enforce a schema contract on sources/models (column names,
+  types, nullability, allowed values), tied to the feed `v=` version. A change
+  then fails the build loudly instead of silently breaking downstream — exactly
+  the `.0` / whitespace / dtype drift we had to catch by hand would be caught
+  automatically.
+- **Observability & SLAs.** Beyond pass/fail tests: monitor row-count deltas and
+  metric anomalies, and track reconciliation / freshness results over time
+  against SLAs.
+- **PII & governance.** `user_id` is personal data — access controls, retention
+  policy, and propagation of GDPR deletions.
+- **Cost controls.** Monitor query cost, prefer reservation vs on-demand as
+  appropriate, and lean on partition pruning to avoid full scans.
+- **Governance.** A semantic layer (see "ideas parked") to serve metrics
+  consistently to BI tools and agents; plus a code-style + agent ruleset so SQL
+  authored by different people/agents stays simple, consistent and correct.
+- **Quality gates before deploy.** Unit tests asserting the core metric
+  calculations (CAC, ROAS, revenue) haven't silently changed; duplicate checks;
+  and a data-diff of model output (before vs after the change) reviewed before
+  promotion.
+
 ## out of scope
 
 - materialization: everything is a **view** for now; in production the layers
