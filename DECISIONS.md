@@ -97,7 +97,9 @@
 - **Orchestration & scheduling.** A single orchestrator (e.g. Airflow) owns the
   daily run: wait until every spend feed has landed, then trigger the pipeline —
   or, on a timeout, run a partial pipeline (proceed without a late source rather
-  than block everything).
+  than block everything). Real refreshes often need to run in pieces, which maps
+  cleanly onto **dbt tags** — tag models by layer / source / domain and run a
+  subset (`dbt build --select tag:...`) instead of the whole DAG.
 - **Alerting.** The orchestrator notifies on load failures, source-freshness
   breaches, and test failures.
 - **Environments & CI/CD.** Separate dev/test environments so model developers
@@ -145,7 +147,9 @@
 - **Quality gates before deploy.** Unit tests asserting the core metric
   calculations (CAC, ROAS, revenue) haven't silently changed; duplicate checks;
   and a data-diff of model output (before vs after the change) reviewed before
-  promotion.
+  promotion. Plus an **aggregate-integrity test** that the mart's key totals
+  (spend, installs, net revenue) equal the same totals in the intermediate
+  models — catching join fan-out or dropped rows during mart assembly.
 
 ## out of scope
 
