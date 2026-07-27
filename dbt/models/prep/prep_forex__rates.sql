@@ -10,7 +10,7 @@ WITH forex_raw AS (
     SELECT
         *,
         _FILE_NAME AS data_source
-    FROM {{ source('raw', 'fx_rates') }}
+    FROM {{ source('raw', 'forex_rates') }}
 ),
 
 latest_load AS (
