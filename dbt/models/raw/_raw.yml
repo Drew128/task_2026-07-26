@@ -80,7 +80,7 @@ sources:
             format: newline_delimited_json
             hive_partition_uri_prefix: "gs://{{ var('raw_bucket') }}/source=billing_partner/feed=transactions/type=transaction/v=1/"
 
-      - name: fx_rates
+      - name: forex_rates
         description: Daily FX rates (CSV), usd_rate = USD per 1 unit currency.
         loaded_at_field: "CAST(`date` AS TIMESTAMP)"
         freshness:
