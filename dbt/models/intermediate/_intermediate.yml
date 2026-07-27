@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: intermediate__first_touch
+    description: One row per user — earliest install → first-touch campaign.
+    columns:
+      - name: user_id
+        description: Join key to events/billing; must be unique (one row per user).
+        data_tests:
+          - not_null
+          - unique

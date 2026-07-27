@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: prep__attribution_events
+    columns:
+      - name: user_id
+        # every event's user must have a first-touch install
+        data_tests:
+          - relationships:
+              to: ref('intermediate__first_touch')
+              field: user_id
+
+  - name: prep__billing_transactions
+    columns:
+      - name: user_id
+        # every billing user must have a first-touch install
+        data_tests:
+          - relationships:
+              to: ref('intermediate__first_touch')
+              field: user_id

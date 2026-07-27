@@ -1,0 +1,22 @@
+version: 2
+
+seeds:
+  - name: account_channel_map
+    description: >
+      Config-driven mapping of ad account_id → channel (+ platform). Adding a
+      new ad account = add a row here; no model changes needed.
+    config:
+      schema: dictionary
+      column_types:
+        account_id: string
+        channel: string
+        platform: string
+    columns:
+      - name: account_id
+        data_tests: [not_null, unique]
+      - name: channel
+        data_tests: [not_null]
+      - name: platform
+        data_tests:
+          - not_null
+          - accepted_values: {values: ['meta', 'tiktok', 'google']}

@@ -24,14 +24,14 @@ latest_load AS (
 
 final AS (
     SELECT
-        transaction_id,
-        user_id,
+        CAST(transaction_id AS STRING)          AS transaction_id,
+        CAST(user_id AS STRING)                 AS user_id,
         type,
-        CAST(amount_usd AS NUMERIC)         AS amount_usd,
-        CAST(created_at_utc AS TIMESTAMP)   AS created_at_utc,
+        CAST(amount_usd AS NUMERIC)             AS amount_usd,
+        CAST(created_at_utc AS TIMESTAMP)       AS created_at_utc,
         DATETIME(CAST(created_at_utc AS TIMESTAMP), '{{ var("report_timezone") }}')
-                                            AS created_at_local,
-        original_transaction_id,
+                                                AS created_at_local,
+        CAST(original_transaction_id AS STRING) AS original_transaction_id,
         data_source
     FROM latest_load
 )

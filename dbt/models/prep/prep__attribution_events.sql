@@ -24,16 +24,24 @@ latest_load AS (
 
 final AS (
     SELECT
-        event_id,
-        user_id,
+        CAST(event_id AS STRING)                               AS event_id,
+        CAST(user_id AS STRING)                                AS user_id,
         event_type,
         platform,
         CAST(event_time_utc AS TIMESTAMP)                      AS event_at_utc,
         DATETIME(CAST(event_time_utc AS TIMESTAMP), '{{ var("report_timezone") }}')
                                                                AS event_at_local,
         CAST(received_at_utc AS TIMESTAMP)                     AS received_at_utc,
-        NULLIF(REGEXP_REPLACE(campaign_id, r'^(meta_|tiktok_|google_)', ''), '')
-                                                               AS campaign_id,
+        NULLIF(                                                  -- organic ('') → NULL
+            REGEXP_REPLACE(                                       -- drop float artifact "…​.0"
+                REGEXP_REPLACE(                                   -- strip platform prefix
+                    TRIM(campaign_id),                           -- trim whitespace
+                    r'^(meta_|tiktok_|google_)', ''
+                ),
+                r'\.0$', ''
+            ),
+            ''
+        )                                                        AS campaign_id,
         country,
         data_source
     FROM latest_load
