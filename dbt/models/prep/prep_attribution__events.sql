@@ -1,7 +1,7 @@
 {{ config(
     schema='prep_attribution',
     alias='events',
-    materialized='table'
+    materialized='view'
 ) }}
 
 -- event-level

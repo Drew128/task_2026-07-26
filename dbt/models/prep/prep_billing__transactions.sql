@@ -1,7 +1,7 @@
 {{ config(
     schema='prep_billing',
     alias='transactions',
-    materialized='table'
+    materialized='view'
 ) }}
 
 -- transaction-level

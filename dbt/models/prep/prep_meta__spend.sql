@@ -1,7 +1,7 @@
 {{ config(
     schema='prep_meta',
     alias='spend',
-    materialized='table'
+    materialized='view'
 ) }}
 
 -- daily

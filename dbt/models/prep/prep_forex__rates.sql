@@ -1,7 +1,7 @@
 {{ config(
     schema='prep_forex',
     alias='rates',
-    materialized='table'
+    materialized='view'
 ) }}
 
 -- daily

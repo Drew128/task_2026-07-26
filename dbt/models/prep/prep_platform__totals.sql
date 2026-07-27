@@ -1,7 +1,7 @@
 {{ config(
     schema='prep_platform',
     alias='totals',
-    materialized='table'
+    materialized='view'
 ) }}
 
 -- daily

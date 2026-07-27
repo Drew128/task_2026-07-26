@@ -14,9 +14,10 @@
   - test: **freshness** — daily feeds → yesterday (1d/2d); hourly & realtime
     (tiktok, events, billing) → previous hour (1h/2h)
 
-- **prep** (one model per source · table · own dataset `prep_<source>.<feed>`)
+- **prep** (one model per source · view · own dataset `prep_<source>.<feed>`)
+  - named `prep` (not `stage`) to avoid ambiguity with the staging/`stage` environment
   - meta: flatten nested JSON, dedup restatements by newest `export_ts`
-  - tiktok: hourly UTC→NY date, account currency→USD via FX, roll up to daily
+  - tiktok: hourly → daily, UTC→NY date; kept in native currency (FX conversion deferred to intermediate)
   - google: `cost_micros / 1e6`
   - events: strip campaign_id platform prefix (organic→NULL), UTC→NY date
   - billing: UTC→NY date
@@ -26,7 +27,9 @@
 
 ## out of scope
 
-- incrementality (models are full-refresh tables)
+- materialization: everything is a **view** for now; in production the layers
+  would need tables + incremental models depending on data volume and the
+  load/refresh cadence
 - dev/prod environment separation
 - orchestration tags/selectors (refresh only what changed)
 
