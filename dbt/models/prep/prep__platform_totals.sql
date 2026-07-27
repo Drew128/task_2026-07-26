@@ -1,6 +1,6 @@
 {{ config(
-    schema='prep_platform',
-    alias='totals',
+    schema='prep',
+    alias='platform_totals',
     materialized='view'
 ) }}
 

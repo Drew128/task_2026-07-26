@@ -13,7 +13,7 @@ sources:
       Add a new feed = add a source block; add a new load = drop a new
       load_date=/load_epoch= folder (staging keeps only the latest load).
     database: "{{ var('gcp_project') }}"
-    schema: raw
+    schema: dbt_raw
     loader: gcloud storage
 
     tables:

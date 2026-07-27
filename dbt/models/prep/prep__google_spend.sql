@@ -1,6 +1,6 @@
 {{ config(
-    schema='prep_google',
-    alias='spend',
+    schema='prep',
+    alias='google_spend',
     materialized='view'
 ) }}
 

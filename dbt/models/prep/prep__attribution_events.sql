@@ -1,6 +1,6 @@
 {{ config(
-    schema='prep_attribution',
-    alias='events',
+    schema='prep',
+    alias='attribution_events',
     materialized='view'
 ) }}
 
@@ -32,7 +32,7 @@ final AS (
         DATETIME(CAST(event_time_utc AS TIMESTAMP), '{{ var("report_timezone") }}')
                                                                AS event_at_local,
         CAST(received_at_utc AS TIMESTAMP)                     AS received_at_utc,
-        NULLIF(REGEXP_REPLACE(campaign_id, r'^(meta_|tiktok_|google_)', ''), '') 
+        NULLIF(REGEXP_REPLACE(campaign_id, r'^(meta_|tiktok_|google_)', ''), '')
                                                                AS campaign_id,
         country,
         data_source

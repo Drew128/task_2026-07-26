@@ -1,6 +1,6 @@
 {{ config(
-    schema='prep_tiktok',
-    alias='spend',
+    schema='prep',
+    alias='tiktok_spend',
     materialized='view'
 ) }}
 

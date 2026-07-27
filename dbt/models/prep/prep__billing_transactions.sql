@@ -1,6 +1,6 @@
 {{ config(
-    schema='prep_billing',
-    alias='transactions',
+    schema='prep',
+    alias='billing_transactions',
     materialized='view'
 ) }}
 
@@ -29,7 +29,7 @@ final AS (
         type,
         CAST(amount_usd AS NUMERIC)         AS amount_usd,
         CAST(created_at_utc AS TIMESTAMP)   AS created_at_utc,
-        DATETIME(CAST(created_at_utc AS TIMESTAMP), '{{ var("report_timezone") }}')  
+        DATETIME(CAST(created_at_utc AS TIMESTAMP), '{{ var("report_timezone") }}')
                                             AS created_at_local,
         original_transaction_id,
         data_source

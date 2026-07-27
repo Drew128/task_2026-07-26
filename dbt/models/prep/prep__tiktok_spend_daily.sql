@@ -1,6 +1,6 @@
 {{ config(
-    schema='prep_tiktok',
-    alias='spend_daily',
+    schema='prep',
+    alias='tiktok_spend_daily',
     materialized='view'
 ) }}
 
@@ -8,7 +8,7 @@
 
 WITH tiktok_hourly AS (
     SELECT *
-    FROM {{ ref('prep_tiktok__spend') }}
+    FROM {{ ref('prep__tiktok_spend') }}
 ),
 
 final AS (

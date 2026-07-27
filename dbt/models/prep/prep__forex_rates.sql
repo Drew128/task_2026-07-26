@@ -1,6 +1,6 @@
 {{ config(
-    schema='prep_forex',
-    alias='rates',
+    schema='prep',
+    alias='forex_rates',
     materialized='view'
 ) }}
 

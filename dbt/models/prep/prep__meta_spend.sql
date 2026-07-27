@@ -1,6 +1,6 @@
 {{ config(
-    schema='prep_meta',
-    alias='spend',
+    schema='prep',
+    alias='meta_spend',
     materialized='view'
 ) }}
 
