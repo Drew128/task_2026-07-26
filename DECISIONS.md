@@ -80,6 +80,12 @@
 
 ## ideas parked for later
 
+- **semantic layer** — add a semantic layer (e.g. dbt Semantic Layer / MetricFlow)
+  over the intermediate models, or promote them into the mart, so metrics
+  (CAC, ROAS, installs, net revenue) are defined once and served consistently.
+  This lets BI tools and LLM agents that consume a semantic layer query
+  governed, self-describing metrics instead of re-deriving them from raw SQL.
+
 - **hourly TikTok report** — `prep__tiktok_spend` is kept at the source's hourly
   grain, and attribution + billing are event/transaction-level (near real-time),
   so we could build an intraday/hourly acquisition report for TikTok. Parked for
