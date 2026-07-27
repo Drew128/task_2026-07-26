@@ -25,6 +25,24 @@
   - conventions: source CTEs on top → transforms → `final`; UPPERCASE keywords;
     `_FILE_NAME AS data_source` for lineage
 
+## data quirks (found in the sources)
+
+- **Meta restatements** — same `(date, campaign)` re-pulled with a newer
+  `export_ts`; dedup keeps the newest export.
+- **`campaign_id` ↔ `campaign_name` not 1:1** — Meta campaign `23851204001` was
+  renamed (`..._Broad` → `..._Broad_v2`). Name is treated as a per-date
+  attribute (kept in a dimension, not the fact key), so a rename never splits
+  or double-counts spend.
+- **`event_id` not globally unique** — 680 exact-duplicate event rows; dedup by
+  `event_id` (newest `received_at_utc`) collapses them.
+- **attribution `campaign_id` dirty** — mixed `meta_`/`tiktok_`/`google_` prefixes
+  (most bare), plus trailing whitespace (`"23851204001 "`, 1550 rows) and float
+  artifacts (`"1790223344.0"`, 2218 rows). Normalized in prep: TRIM → strip
+  prefix → drop trailing `.0`. Without this, ~11% of events wouldn't join to
+  spend and spend/conversions would split across mismatched campaign ids.
+- **Google export missing 2 days** (`2026-04-21`, `2026-04-22`, ≈ $353) — a gap
+  in the raw feed, not a modelling bug; surfaced in `RECONCILIATION.md`.
+
 ## out of scope
 
 - materialization: everything is a **view** for now; in production the layers
@@ -36,6 +54,10 @@
 ## open
 
 - prep dedup: prefer an in-data field over `load_epoch` where one exists
+- **test — orphan conversion users**: `events_daily`/`revenue_daily` INNER JOIN
+  `first_touch`, so a trial/purchase/charge from a user with no install would be
+  silently dropped. Currently 0 such rows, but add a relationship test (every
+  conversion `user_id` exists in `first_touch`) to fail loudly if it ever breaks.
 
 ## build from scratch
 
