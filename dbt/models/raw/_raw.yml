@@ -5,13 +5,6 @@ sources:
     description: >
       External tables over the Hive-partitioned GCS landing zone. Layout:
         source=<s>/feed=<f>/type=<t>/v=<n>/load_date=<YYYY-MM-DD>/load_epoch=<sec>/<file>
-      The hive_partition_uri_prefix is scoped per source down to v=<n>/, so
-      source/feed/type/v are constants baked into the prefix and only
-      load_date + load_epoch are partition columns. This keeps each external
-      table's partition schema trivial and avoids BigQuery mis-inferring the
-      key order when many source= branches share one bucket root.
-      Add a new feed = add a source block; add a new load = drop a new
-      load_date=/load_epoch= folder (staging keeps only the latest load).
     database: "{{ var('gcp_project') }}"
     schema: dbt_raw
     loader: gcloud storage
