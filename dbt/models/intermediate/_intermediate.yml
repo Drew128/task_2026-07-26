@@ -9,3 +9,11 @@ models:
         data_tests:
           - not_null
           - unique
+
+  - name: intermediate__spend_daily
+    columns:
+      - name: channel
+        # NULL channel = an ad account is spending but is missing from the
+        # account_channel_map seed → we forgot to onboard it
+        data_tests:
+          - not_null
