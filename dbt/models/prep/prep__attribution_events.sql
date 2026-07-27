@@ -24,8 +24,8 @@ latest_load AS (
 
 final AS (
     SELECT
-        event_id,
-        user_id,
+        CAST(event_id AS STRING)                               AS event_id,
+        CAST(user_id AS STRING)                                AS user_id,
         event_type,
         platform,
         CAST(event_time_utc AS TIMESTAMP)                      AS event_at_utc,

@@ -5,9 +5,6 @@
 ) }}
 
 -- grain: transaction_date × campaign_id (campaign_id is NULL for organic).
---   gross_revenue  = sum of charges
---   refund_amount  = sum of refund magnitudes
---   net_revenue    = charges + refunds
 
 WITH billing_raw AS (
     SELECT *

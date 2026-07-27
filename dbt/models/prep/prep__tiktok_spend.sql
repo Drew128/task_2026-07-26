@@ -24,13 +24,14 @@ latest_load AS (
 
 final AS (
     SELECT
-        CAST(stat_hour_utc AS TIMESTAMP)                                            AS stat_hour_utc,
-        DATETIME(CAST(stat_hour_utc AS TIMESTAMP), '{{ var("report_timezone") }}')  AS stat_hour_local,
-        account_id,
-        CAST(campaign_id AS STRING) AS campaign_id,
+        CAST(stat_hour_utc AS TIMESTAMP)                         AS stat_hour_utc,
+        DATETIME(CAST(stat_hour_utc AS TIMESTAMP), '{{ var("report_timezone") }}')  
+                                                                 AS stat_hour_local,
+        CAST(account_id AS STRING)                               AS account_id,
+        CAST(campaign_id AS STRING)                              AS campaign_id,
         campaign_name,
         currency,
-        CAST(spend AS NUMERIC)      AS spend_native,
+        CAST(spend AS NUMERIC)                                   AS spend_native,
         data_source
     FROM latest_load
 )

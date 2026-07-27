@@ -25,7 +25,7 @@ latest_load AS (
 final AS (
     SELECT
         CAST(`date` AS DATE)                    AS spend_date,
-        customer_id                             AS account_id,
+        CAST(customer_id AS STRING)             AS account_id,
         CAST(campaign_id AS STRING)             AS campaign_id,
         campaign_name,
         CAST(cost_micros AS NUMERIC) / 1000000  AS spend_usd,

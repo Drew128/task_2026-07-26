@@ -16,8 +16,8 @@ WITH meta_raw AS (
 meta_flat AS (
     SELECT
         CAST(`date` AS DATE)                AS spend_date,
-        account_id,
-        campaign.id                         AS campaign_id,
+        CAST(account_id AS STRING)          AS account_id,
+        CAST(campaign.id AS STRING)         AS campaign_id,
         campaign.name                       AS campaign_name,
         CAST(metrics.spend_usd AS NUMERIC)  AS spend_usd,
         TIMESTAMP(export_ts)                AS exported_at,
