@@ -93,6 +93,25 @@
 - dev/prod environment separation
 - orchestration tags/selectors (refresh only what changed)
 
+## testing
+
+Lean and purpose-driven — each test guards a specific failure mode; no blanket
+not_null / range noise.
+
+- **freshness** (raw sources) — daily feeds must be no older than yesterday,
+  hourly & realtime feeds no older than the previous hour. Catches a stalled or
+  stopped feed. Run with `dbt source freshness`.
+- **referential integrity** — every conversion (`attribution_events`) and
+  billing `user_id` must exist in `first_touch` (relationship tests). Guards the
+  inner joins from silently dropping orphan conversions/revenue.
+- **manual-input validation** — the hand-maintained `account_channel_map` seed:
+  `account_id` unique + not_null, `platform` accepted_values. Catches typos or
+  duplicates when a human onboards a new account.
+- **reconciliation vs source-of-truth** — modelled spend must match
+  `platform_daily_totals` (the platform UI SSOT) within 0.5% per platform-day
+  (`assert_spend_reconciles_within_0_5pct`). Currently, and by design, flags the
+  Google 2-day source gap.
+
 ## open
 
 - prep dedup: prefer an in-data field over `load_epoch` where one exists
