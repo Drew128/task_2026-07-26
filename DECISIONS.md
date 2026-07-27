@@ -40,9 +40,10 @@
 - **Meta restatements** — same `(date, campaign)` re-pulled with a newer
   `export_ts`; dedup keeps the newest export.
 - **`campaign_id` ↔ `campaign_name` not 1:1** — Meta campaign `23851204001` was
-  renamed (`..._Broad` → `..._Broad_v2`). Name is treated as a per-date
-  attribute (kept in a dimension, not the fact key), so a rename never splits
-  or double-counts spend.
+  renamed (`..._Broad` → `..._Broad_v2`). We decided to keep only the newest 
+  name (`ORDER BY spend_date DESC`) as a single mapping per ID. It is unknown 
+  if stakeholders prefer to see renames as separate reporting rows; if they do, 
+  a different approach (e.g., treating name changes as new entities or SCD2) would be needed.
 - **`event_id` not globally unique** — 680 exact-duplicate event rows; dedup by
   `event_id` (newest `received_at_utc`) collapses them.
 - **attribution `campaign_id` dirty** — mixed `meta_`/`tiktok_`/`google_` prefixes

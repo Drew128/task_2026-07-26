@@ -1,6 +1,6 @@
 {{ config(
     schema='mart',
-    alias='acquisition_daily',
+    alias='marketing_performance_daily',
     materialized='view'
 ) }}
 
