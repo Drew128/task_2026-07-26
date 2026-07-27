@@ -28,8 +28,9 @@ final AS (
         user_id,
         type,
         CAST(amount_usd AS NUMERIC)         AS amount_usd,
-        CAST(created_at_utc AS TIMESTAMP)                                            AS created_at_utc,
-        DATETIME(CAST(created_at_utc AS TIMESTAMP), '{{ var("report_timezone") }}')  AS created_at_local,
+        CAST(created_at_utc AS TIMESTAMP)   AS created_at_utc,
+        DATETIME(CAST(created_at_utc AS TIMESTAMP), '{{ var("report_timezone") }}')  
+                                            AS created_at_local,
         original_transaction_id,
         data_source
     FROM latest_load

@@ -14,7 +14,7 @@ WITH tiktok_raw AS (
 ),
 
 forex AS (
-    SELECT rate_date, currency, usd_rate, data_source
+    SELECT *
     FROM {{ ref('prep_forex__rates') }}
 ),
 
@@ -29,6 +29,8 @@ latest_load AS (
 
 localized AS (
     SELECT
+        CAST(stat_hour_utc AS TIMESTAMP) AS stat_hour_utc,
+        DATETIME(CAST(stat_hour_utc AS TIMESTAMP), '{{ var("report_timezone") }}') AS stat_hour_local,
         DATE(CAST(stat_hour_utc AS TIMESTAMP), '{{ var("report_timezone") }}') AS spend_date,
         account_id,
         CAST(campaign_id AS STRING) AS campaign_id,
@@ -41,6 +43,8 @@ localized AS (
 
 converted AS (
     SELECT
+        localized.stat_hour_utc,
+        localized.stat_hour_local,
         localized.spend_date,
         localized.account_id,
         localized.campaign_id,
@@ -59,14 +63,15 @@ converted AS (
 
 final AS (
     SELECT
+        stat_hour_utc,
+        stat_hour_local,
         spend_date,
         account_id,
         campaign_id,
-        MAX(campaign_name)  AS campaign_name,
-        SUM(spend_usd)      AS spend_usd,
-        MAX(data_source)    AS data_source
+        campaign_name,
+        spend_usd,
+        data_source
     FROM converted
-    GROUP BY spend_date, account_id, campaign_id
 )
 
 SELECT *
