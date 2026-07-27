@@ -25,6 +25,16 @@
   - conventions: source CTEs on top → transforms → `final`; UPPERCASE keywords;
     `_FILE_NAME AS data_source` for lineage
 
+- **config-driven mapping** — `account_id → channel (+ platform)` lives in a
+  seed (`account_channel_map`, in the `dictionary` dataset). Adding a new ad
+  account = add a row; **no model or DB change**. Because it is hand-maintained,
+  it carries tests (`account_id` unique/not_null, `platform` accepted_values).
+  - *Alternative*: instead of a seed, back the mapping with an **external table
+    over a Google Sheet**, where the sheet is filled directly or via **Google
+    Forms**. That adds input-side simplification and validation (dropdowns,
+    checklists, required fields) so non-engineers can onboard accounts safely,
+    while dbt still consumes it as a source.
+
 ## data quirks (found in the sources)
 
 - **Meta restatements** — same `(date, campaign)` re-pulled with a newer
@@ -42,6 +52,31 @@
   spend and spend/conversions would split across mismatched campaign ids.
 - **Google export missing 2 days** (`2026-04-21`, `2026-04-22`, ≈ $353) — a gap
   in the raw feed, not a modelling bug; surfaced in `RECONCILIATION.md`.
+
+## revenue & cohort ROAS
+
+- **implemented — event-date** (`revenue_daily`): revenue booked on the
+  transaction date, credited to the first-touch campaign. This is what the
+  mart's `net_revenue` / `ROAS` use. It is a daily P&L view — per-day ROAS mixes
+  cohorts (revenue on day D includes users acquired long ago), so it is not a
+  clean efficiency of that day's spend.
+
+- **not implemented, but the correct acquisition metric — cohort D0/D7/D30
+  ROAS**. Anchor revenue to the install date and, for each window N, compute
+  `ROAS_dN = net revenue from a cohort within N days of install ÷ spend that
+  acquired that cohort`. Numerator and denominator must be **commensurate**:
+  1. **only closed/mature cohorts** — include a cohort only if the full N-day
+     window has elapsed by the as-of date (`install_date + N ≤ as_of`).
+     Recent cohorts are excluded; otherwise their right-censored revenue is
+     divided by full spend and ROAS_dN is understated.
+  2. **same cohorts on both sides** — the denominator is the spend of exactly
+     those mature cohorts, and the numerator is only revenue from users within
+     their N-day window. Never mix full spend with truncated revenue.
+
+  Parked for the take-home (the event-date mart is the deliverable). The
+  building blocks are already in place: `first_touch` gives each user's install
+  date, so `days_since_install` and a dynamic `as_of` (max billing date) are all
+  that's needed to add it.
 
 ## ideas parked for later
 
@@ -61,10 +96,6 @@
 ## open
 
 - prep dedup: prefer an in-data field over `load_epoch` where one exists
-- **test — orphan conversion users**: `events_daily`/`revenue_daily` INNER JOIN
-  `first_touch`, so a trial/purchase/charge from a user with no install would be
-  silently dropped. Currently 0 such rows, but add a relationship test (every
-  conversion `user_id` exists in `first_touch`) to fail loudly if it ever breaks.
 
 ## build from scratch
 
