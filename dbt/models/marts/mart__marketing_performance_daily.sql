@@ -78,3 +78,4 @@ final AS (
 
 SELECT *
 FROM final
+ORDER BY date, channel, campaign_id
