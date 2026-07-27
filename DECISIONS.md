@@ -103,8 +103,7 @@
 # 1. upload data/ to GCS in the hive layout (see raw sources)
 # 2. set gcp_project / raw_bucket in dbt_project.yml vars (or override via --vars)
 dbt deps
-dbt seed                                   # load account_channel_map (config-driven mapping)
 dbt run-operation stage_external_sources   # create raw external tables
-dbt build                                  # build seeds + models + run tests
-dbt source freshness                       # freshness checks
+dbt source freshness                       # validate raw freshness before building
+dbt build                                  # seed + build models + run tests
 ```
