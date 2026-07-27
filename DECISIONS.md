@@ -43,6 +43,13 @@
 - **Google export missing 2 days** (`2026-04-21`, `2026-04-22`, ≈ $353) — a gap
   in the raw feed, not a modelling bug; surfaced in `RECONCILIATION.md`.
 
+## ideas parked for later
+
+- **hourly TikTok report** — `prep__tiktok_spend` is kept at the source's hourly
+  grain, and attribution + billing are event/transaction-level (near real-time),
+  so we could build an intraday/hourly acquisition report for TikTok. Parked for
+  now; the daily mart is the deliverable.
+
 ## out of scope
 
 - materialization: everything is a **view** for now; in production the layers
